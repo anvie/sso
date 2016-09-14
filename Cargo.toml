@@ -1,0 +1,12 @@
+[package]
+name = "sso"
+version = "0.0.1"
+authors = ["robin <r@nosql.asia>"]
+
+[dependencies]
+nickel = "*"
+#ldap = "*"
+openldap = "1.1.0"
+rust-crypto = "^0.2"
+rustc-serialize = "0.3"
+url = "*"

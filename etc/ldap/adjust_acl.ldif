@@ -1,0 +1,3 @@
+dn: olcDatabase={1}hdb,cn=config
+add: olcAccess
+olcAccess: to * by dn="cn=admin,dc=ansvia,dc=org" write by self read
