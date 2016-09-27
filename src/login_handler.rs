@@ -13,6 +13,12 @@ use std::io::Read;
 use std::error::Error;
 
 
+fn check_password(challenge_password: &String, password: &String) -> bool {
+    let data = &challenge_password[6..];
+    println!("data: {}", data);
+    true
+}
+
 
 pub fn setup(server: &mut Nickel){
 
@@ -57,7 +63,26 @@ pub fn setup(server: &mut Nickel){
         match conn.simple_search(&format!("uid={},ou=People,dc={},dc=org", user_name, org),
             codes::scopes::LDAP_SCOPE_BASE){
             Ok(result) => {
+
+                let user_password = {
+                    let owned = result.to_owned();
+                    match owned.first(){
+                        Some(ref o) => {
+                            let v = o.get("userPassword").unwrap_or(&Vec::<String>::new()).to_owned();
+                            match v.first() {
+                                Some(v) => v.clone(),
+                                None => "".to_string()
+                            }
+                        },
+                        _ => "".to_string()
+                    }
+                };
+
                 let mut result_str = "".to_owned();
+
+                // let user_password = user_obj.get("userPassword");
+
+                println!("userPassword: {:?}", user_password);
 
                 for res in result {
                     println!("simple search result: {:?}", res);
