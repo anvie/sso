@@ -14,6 +14,11 @@ use std::error::Error;
 
 
 fn check_password(challenge_password: &String, password: &String) -> bool {
+    let algo = &challenge_password[..6];
+    if (algo != "{SSHA}"){
+        error!("Unexpected pass hash algo: {}", algo);
+        return false;
+    }
     let data = &challenge_password[6..];
     println!("data: {}", data);
     true
@@ -30,7 +35,7 @@ pub fn setup(server: &mut Nickel){
     server.post("/login", middleware! { |_req, mut _resp|
 
         let mut user_name = String::new();
-        let mut password = String::new();
+        let mut given_password = String::new();
 
         {
             let mut body = String::new();
@@ -41,7 +46,7 @@ pub fn setup(server: &mut Nickel){
 
             for (key, value) in url::form_urlencoded::parse(body.as_bytes()){
                 if (key == "user_name") { user_name = value.clone().into_owned(); }
-                if (key == "password") { password = value.clone().into_owned(); }
+                if (key == "password") { given_password = value.clone().into_owned(); }
             }
 
         }
@@ -82,7 +87,7 @@ pub fn setup(server: &mut Nickel){
 
                 // let user_password = user_obj.get("userPassword");
 
-                println!("userPassword: {:?}", user_password);
+                println!("userPassword: {:?}, check_password(): {}", user_password, check_password(&user_password, &given_password));
 
                 for res in result {
                     println!("simple search result: {:?}", res);

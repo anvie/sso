@@ -3,6 +3,8 @@ extern crate openldap as ldap;
 extern crate crypto;
 extern crate rustc_serialize as serialize;
 extern crate url;
+#[macro_use] extern crate log;
+extern crate env_logger;
 
 use serialize::base64::{self, ToBase64};
 use serialize::hex::FromHex;
@@ -18,6 +20,9 @@ use std::io::Read;
 mod login_handler;
 
 fn main() {
+
+    env_logger::init().unwrap();
+
     let mut server:Nickel = Nickel::new();
 
     server.utilize(StaticFilesHandler::new("static/"));
