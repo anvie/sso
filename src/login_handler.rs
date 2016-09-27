@@ -10,7 +10,7 @@ use std::str;
 use std::sync::{Arc, Mutex};
 use crypto::bcrypt;
 use std::io::Read;
-
+use std::error::Error;
 
 
 
@@ -54,29 +54,42 @@ pub fn setup(server: &mut Nickel){
 
         let org = query.get("org").unwrap_or("ansvia").to_string();
 
-        let result = conn.simple_search(&format!("dc={},dc=org", org),
-            codes::scopes::LDAP_SCOPE_BASE).unwrap();
+        match conn.simple_search(&format!("uid={},ou=People,dc={},dc=org", user_name, org),
+            codes::scopes::LDAP_SCOPE_BASE){
+            Ok(result) => {
+                let mut result_str = "".to_owned();
 
-        let mut result_str = "".to_owned();
-
-        for res in result {
-            println!("simple search result: {:?}", res);
-            for (key, value) in res {
-                println!("- key: {:?}", key);
-                result_str.push_str("    ");
-                result_str.push_str(&key);
-                result_str.push_str(" :  ");
-                for res_val in value {
-                    println!("    + {:?}", res_val);
-                    result_str.push_str(&res_val);
-                    result_str.push_str("\n");
+                for res in result {
+                    println!("simple search result: {:?}", res);
+                    for (key, value) in res {
+                        println!("- key: {:?}", key);
+                        result_str.push_str("    ");
+                        result_str.push_str(&key);
+                        result_str.push_str(" :  ");
+                        for res_val in value {
+                            println!("    + {:?}", res_val);
+                            result_str.push_str(&res_val);
+                            result_str.push_str("\n");
+                        }
+                    }
                 }
+
+                _resp.headers_mut().set_raw("Content-type", vec![b"text/plain".to_vec()]);
+
+                //format!("continue to: {}\n  {:?}", cont, result)
+                format!("Oke, continue to: {}, result:\n{}", cont, result_str)
+            },
+            Err(err) => {
+                match err.description().as_ref() {
+                    "No such object" => {
+                        format!("Credential for `{}` didn't exists.", user_name)
+                    },
+                    another_error =>
+                        format!("Error: {}", another_error)
+                }
+
             }
         }
 
-        _resp.headers_mut().set_raw("Content-type", vec![b"text/plain".to_vec()]);
-
-        //format!("continue to: {}\n  {:?}", cont, result)
-        format!("Oke, continue to: {}, result:\n{}", cont, result_str)
     });
 }
