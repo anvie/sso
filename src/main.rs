@@ -1,5 +1,5 @@
 #[macro_use] extern crate nickel;
-extern crate openldap as ldap;
+extern crate openldap as oldap;
 extern crate crypto;
 extern crate rustc_serialize as serialize;
 extern crate url;
@@ -10,13 +10,14 @@ use serialize::base64::{self, ToBase64};
 use serialize::hex::FromHex;
 use std::collections::HashMap;
 use nickel::{Nickel, HttpRouter, QueryString, StaticFilesHandler};
-use ldap::*;
-use ldap::errors::*;
+// use ldap::*;
+// use ldap::errors::*;
 use std::str;
 use std::sync::{Arc, Mutex};
 use crypto::bcrypt;
 use std::io::Read;
 
+mod ldap;
 mod login_handler;
 
 fn main() {
