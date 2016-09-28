@@ -1,0 +1,6 @@
+
+data_store = "/tmp/sso-store-2"
+
+[ldap]
+admin_user = "admin"
+admin_password = "123"

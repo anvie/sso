@@ -5,6 +5,9 @@ extern crate rustc_serialize as serialize;
 extern crate url;
 #[macro_use] extern crate log;
 extern crate env_logger;
+extern crate rocksdb;
+extern crate toml;
+extern crate rand;
 
 use serialize::base64::{self, ToBase64};
 use serialize::hex::FromHex;
@@ -17,12 +20,30 @@ use std::sync::{Arc, Mutex};
 use crypto::bcrypt;
 use std::io::Read;
 
+mod config;
 mod ldap;
 mod login_handler;
+mod store;
+mod token;
+
+pub struct Context {
+    conf:config::Conf,
+    store:Arc<Mutex<store::Store>>
+}
 
 fn main() {
 
     env_logger::init().unwrap();
+
+    let conf = config::Conf::read_file("example.toml");
+    let store = store::Store::new(&conf.data_store);
+
+    let ctx = Context {
+        conf: conf,
+        store: Arc::new(Mutex::new(store))
+    };
+
+    debug!("data_store: {:?}", ctx.conf.data_store);
 
     let mut server:Nickel = Nickel::new();
 
@@ -49,7 +70,7 @@ fn main() {
         format!("crypted pass: {}", s)
     });
 
-    login_handler::setup(&mut server);
+    login_handler::setup(&ctx, &mut server);
 
     server.listen("127.0.0.1:8080");
 }

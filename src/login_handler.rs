@@ -16,10 +16,15 @@ use oldap::errors::*;
 
 // module
 use ldap;
+use store::Store;
+use config::Conf;
+use token;
+use Context;
+
 
 fn check_password(challenge_password: &String, password: &String) -> bool {
     let algo = &challenge_password[..6];
-    if (algo != "{SSHA}"){
+    if algo != "{SSHA}" {
         error!("Unexpected pass hash algo: {}", algo);
         return false;
     }
@@ -49,8 +54,9 @@ fn check_password(challenge_password: &String, password: &String) -> bool {
 }
 
 
-pub fn setup(server: &mut Nickel){
+pub fn setup(ctx:&Context, server: &mut Nickel){
 
+    let store = ctx.store.clone();
 
     server.post("/login", middleware! { |_req, mut _resp|
 
@@ -68,6 +74,15 @@ pub fn setup(server: &mut Nickel){
             }
 
         }
+
+        let store = store.lock().unwrap();
+
+        // // before
+        // debug!("before (user_name): {:?}", store.get("user_name"));
+        //
+        // store.put("user_name", &user_name);
+        // // after
+        // debug!("after (user_name): {:?}", store.get("user_name"));
 
         let query = _req.query();
         let cont = query.get("continue").unwrap_or("/");
@@ -133,11 +148,22 @@ pub fn setup(server: &mut Nickel){
                 //     }
                 // }
 
+                // @TODO(robin): generate real token here
+                let generated_token = token::generate();
+                match store.get(&user_name){
+                    Some(old_token) => {
+                        store.del(&old_token)
+                    },
+                    _ => ()
+                }
+                store.put(&generated_token, &user_name);
+                store.put(&user_name, &generated_token);
+
                 _resp.headers_mut().set_raw("Content-type", vec![b"text/plain".to_vec()]);
 
                 //format!("continue to: {}\n  {:?}", cont, result)
                 // format!("Oke, continue to: {}, result:\n{}", cont, result_str)
-                format!("Access Granted. Continue to: {}", cont)
+                format!("Access Granted. Token: {}. Continue to: {}", generated_token, cont)
             },
             Err(err) => {
                 match err.description().as_ref() {
