@@ -1,5 +1,5 @@
 
-data_store = "/tmp/sso-store-2"
+data_store = "/tmp/sso-store"
 
 [ldap]
 admin_user = "admin"

@@ -17,7 +17,6 @@ use oldap::errors::*;
 // module
 use ldap;
 use store::Store;
-use config::Conf;
 use token;
 use Context;
 
@@ -157,7 +156,7 @@ pub fn setup(ctx:&Context, server: &mut Nickel){
                     _ => ()
                 }
                 store.put(&generated_token, &user_name);
-                store.put(&user_name, &generated_token);
+                store.put(&user_name, &generated_token); // for reverse lookup
 
                 _resp.headers_mut().set_raw("Content-type", vec![b"text/plain".to_vec()]);
 

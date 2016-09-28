@@ -22,9 +22,12 @@ use std::io::Read;
 
 mod config;
 mod ldap;
-mod login_handler;
 mod store;
 mod token;
+
+// handlers
+mod login_handler;
+mod api_handler;
 
 pub struct Context {
     conf:config::Conf,
@@ -70,6 +73,7 @@ fn main() {
         format!("crypted pass: {}", s)
     });
 
+    api_handler::setup(&ctx, &mut server);
     login_handler::setup(&ctx, &mut server);
 
     server.listen("127.0.0.1:8080");
