@@ -1,0 +1,12 @@
+[package]
+name = "openldap"
+version = "1.1.0"
+authors = ["Josh Leverette <coder543@gmail.com>", "Ross Delinger <rossdylan@csh.rit.edu>", "Stephen Holsapple <sholsapp@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/coder543/rust-cldap"
+homepage = "https://github.com/coder543/rust-cldap"
+description = "Straightforward Rust bindings to the C openldap library. This is a fork of cldap that has been methodically fixed, extended, and made to be more compliant with openldap. It should be relatively robust and production ready at this point."
+
+[dependencies]
+libc = "0.2.10"

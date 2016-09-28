@@ -6,7 +6,8 @@ authors = ["robin <r@nosql.asia>"]
 [dependencies]
 nickel = "*"
 #ldap = "*"
-openldap = "1.1.0"
+#openldap = "1.1.0"
+openldap = {"path" = "lib/rust-cldap"}
 rust-crypto = "^0.2"
 rustc-serialize = "0.3"
 url = "*"
