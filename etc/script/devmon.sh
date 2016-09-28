@@ -4,9 +4,25 @@
 
 NAME=${PWD##*/}
 
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+
+    case $key in
+        --compile-only)
+        COMPILE_ONLY="YES"
+        shift
+        ;;
+        *)
+        ;;
+    esac
+
+    shift
+done
+
 function run_it {
     if [ -f ./target/debug/$NAME ]; then
-        ./target/debug/$NAME & echo $! > run.pid
+        RUST_LOG=main ./target/debug/$NAME & echo $! > run.pid
     fi
 }
 
@@ -34,7 +50,9 @@ run_it
 while inotifywait -e modify -r tmpl/ src/; do
     kill_it
     compile_it
-    run_it
+    if [ "$COMPILE_ONLY" != "YES" ]; then
+        run_it
+    fi
 done
 
 kill_it
