@@ -1,12 +1,14 @@
 use url;
 
-use serialize::base64::{self, ToBase64};
+use serialize::base64::{self, ToBase64, FromBase64};
 use serialize::hex::FromHex;
 use std::collections::HashMap;
 use nickel::{Nickel, HttpRouter, QueryString, StaticFilesHandler};
 use std::str;
 use std::sync::{Arc, Mutex};
 use crypto::bcrypt;
+use crypto::digest::Digest;
+use crypto::sha1::Sha1;
 use std::io::Read;
 use std::error::Error;
 use oldap::codes;
@@ -22,8 +24,28 @@ fn check_password(challenge_password: &String, password: &String) -> bool {
         return false;
     }
     let data = &challenge_password[6..];
-    println!("data: {}", data);
-    true
+
+    let data_bytes = data.from_base64().unwrap();
+    let digest = &data_bytes[..20];
+    let salt = &data_bytes[20..];
+
+    debug!("data: {:?}", data_bytes);
+    debug!("digest: {:?}", digest);
+    debug!("salt: {:?}", salt);
+
+    let mut sha = Sha1::new();
+    sha.input_str(password);
+    sha.input(salt);
+
+    let mut calculated_sha_output = [0u8; 20];
+    sha.result(&mut calculated_sha_output);
+
+    let matched = digest[..] == calculated_sha_output[..];
+
+    debug!("sha: {:?}", calculated_sha_output);
+    debug!("matched: {}", matched);
+
+    matched
 }
 
 
@@ -87,28 +109,35 @@ pub fn setup(server: &mut Nickel){
 
                 let mut result_str = "".to_owned();
 
-                println!("userPassword: {:?}, check_password(): {}", user_password,
-                    check_password(&user_password, &given_password));
+                let password_is_ok = check_password(&user_password, &given_password);
 
-                for res in result {
-                    println!("simple search result: {:?}", res);
-                    for (key, value) in res {
-                        println!("- key: {:?}", key);
-                        result_str.push_str("    ");
-                        result_str.push_str(&key);
-                        result_str.push_str(" :  ");
-                        for res_val in value {
-                            println!("    + {:?}", res_val);
-                            result_str.push_str(&res_val);
-                            result_str.push_str("\n");
-                        }
-                    }
+                println!("userPassword: {:?}, check_password(): {}", user_password, password_is_ok);
+
+                if (!password_is_ok){
+                    return _resp.send("Access Denied");
                 }
+
+                // for debugging purposes only.
+                // for res in result {
+                //     println!("simple search result: {:?}", res);
+                //     for (key, value) in res {
+                //         println!("- key: {:?}", key);
+                //         result_str.push_str("    ");
+                //         result_str.push_str(&key);
+                //         result_str.push_str(" :  ");
+                //         for res_val in value {
+                //             println!("    + {:?}", res_val);
+                //             result_str.push_str(&res_val);
+                //             result_str.push_str("\n");
+                //         }
+                //     }
+                // }
 
                 _resp.headers_mut().set_raw("Content-type", vec![b"text/plain".to_vec()]);
 
                 //format!("continue to: {}\n  {:?}", cont, result)
-                format!("Oke, continue to: {}, result:\n{}", cont, result_str)
+                // format!("Oke, continue to: {}, result:\n{}", cont, result_str)
+                format!("Access Granted. Continue to: {}", cont)
             },
             Err(err) => {
                 match err.description().as_ref() {
