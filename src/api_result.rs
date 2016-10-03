@@ -32,6 +32,11 @@ impl Cred {
     }
 }
 
+#[derive(Decodable, Encodable)]
+pub struct SystemInfo {
+    pub server_time: u64
+}
+
 pub fn success<T>(result: T) -> ApiResult<T> {
     ApiResult{ error: Default::default(), result : result }
 }

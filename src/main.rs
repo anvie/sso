@@ -8,13 +8,13 @@ extern crate env_logger;
 extern crate rocksdb;
 extern crate toml;
 extern crate rand;
+extern crate time;
 
 use serialize::base64::{self, ToBase64};
 use serialize::hex::FromHex;
 use std::collections::HashMap;
 use nickel::{Nickel, HttpRouter, QueryString, StaticFilesHandler};
-// use ldap::*;
-// use ldap::errors::*;
+
 use std::str;
 use std::sync::{Arc, Mutex};
 use crypto::bcrypt;
@@ -25,6 +25,7 @@ mod ldap;
 mod store;
 mod token;
 #[macro_use] mod api_result;
+mod utils;
 
 // handlers
 mod login_handler;
