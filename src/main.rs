@@ -24,6 +24,7 @@ mod config;
 mod ldap;
 mod store;
 mod token;
+#[macro_use] mod api_result;
 
 // handlers
 mod login_handler;
