@@ -2,4 +2,4 @@ target
 *.lock
 *.pid
 src/build.rs
-
+rev.log

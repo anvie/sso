@@ -34,4 +34,9 @@ Run `./etc/script/devmon.sh` for hot reloading when template files or sources mo
 
 For compile only (no re-run) when source changes add `--compile-only` parameter:
 
-    ./etc/script/devmon.sh --compile-only
+    $ ./etc/script/devmon.sh --compile-only
+
+By default `devmon.sh` using `example.toml` as the config file, if you have your own
+you can set via env var, eg:
+
+    $ CONFIG=dev.toml ./etc/script/devmon.sh

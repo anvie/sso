@@ -20,9 +20,13 @@ do
     shift
 done
 
+if [ -z "$CONFIG" ]; then
+    CONFIG=example.toml
+fi
+
 function run_it {
     if [ -f ./target/debug/$NAME ]; then
-        RUST_LOG=sso ./target/debug/$NAME example.toml & echo $! > run.pid
+        RUST_LOG=sso ./target/debug/$NAME $CONFIG & echo $! > run.pid
     fi
 }
 
