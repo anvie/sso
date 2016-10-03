@@ -9,20 +9,20 @@ use nickel::{Nickel, HttpRouter, QueryString, StaticFilesHandler};
 use nickel::status::StatusCode;
 use nickel::extensions::Redirect;
 use std::str;
-use std::sync::{Arc, Mutex};
-use crypto::bcrypt;
+// use std::sync::{Arc, Mutex};
+// use crypto::bcrypt;
 use crypto::digest::Digest;
 use crypto::sha1::Sha1;
 use std::io::Read;
 use std::error::Error;
 use oldap::codes;
-use oldap::errors::*;
+// use oldap::errors::*;
 use regex::Regex;
 use url::{Url, ParseError};
 
 // module
 use ldap;
-use store::Store;
+// use store::Store;
 use token;
 use Context;
 use api_result;
@@ -64,7 +64,8 @@ pub fn setup(ctx:&Context, server: &mut Nickel){
 
     let store = ctx.store.clone();
 
-    let re_str = format!(r"^https?://[a-zA-Z0-9\.\\-_]+({}).+$", ctx.conf.allowed_continue_domain.replace(".", "\\."));
+    // for security reason we only accept for specific domain/sub-domain provided in config.
+    let re_str = format!(r"^https?://[a-zA-Z0-9\.\\-_]*({}).+$", ctx.conf.allowed_continue_domain.replace(".", "\\."));
     debug!("re_str: {}", re_str);
 
 
@@ -148,7 +149,7 @@ pub fn setup(ctx:&Context, server: &mut Nickel){
 
                 let password_is_ok = check_password(&user_password, &given_password);
 
-                println!("userPassword: {:?}, check_password(): {}", user_password, password_is_ok);
+                // debug!("userPassword: {:?}, check_password(): {}", user_password, password_is_ok);
 
                 if (!password_is_ok){
                     // return _resp.send("Access Denied");

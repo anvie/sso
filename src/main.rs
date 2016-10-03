@@ -20,7 +20,7 @@ use std::collections::HashMap;
 use nickel::{Nickel, HttpRouter, QueryString, StaticFilesHandler};
 use url::percent_encoding::{utf8_percent_encode, DEFAULT_ENCODE_SET};
 
-use std::str;
+use std::{str, env};
 use std::sync::{Arc, Mutex};
 use crypto::bcrypt;
 use std::io::Read;
@@ -47,7 +47,20 @@ fn main() {
 
     env_logger::init().unwrap();
 
-    let conf = config::Conf::read_file("example.toml");
+
+    let args:Vec<String> = env::args().collect();
+
+    debug!("args: {:?}", args);
+
+    if args.len() < 2 {
+        println!("No configuration file specified");
+        println!("Usage: {} [CONFIG-FILE]", args[0]);
+        std::process::exit(22); // EINVAL (Linux system error code for invalid argument)
+    }
+
+    println!("\nSSO service v{}\n", build::VERSION);
+
+    let conf = config::Conf::read_file(&args[1]);
     let store = store::Store::new(&conf.data_store);
 
     let ctx = Context {
@@ -56,6 +69,8 @@ fn main() {
     };
 
     debug!("data_store: {:?}", ctx.conf.data_store);
+
+    println!("Starting...");
 
     let mut server:Nickel = Nickel::new();
 

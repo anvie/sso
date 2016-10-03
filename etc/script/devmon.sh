@@ -22,7 +22,7 @@ done
 
 function run_it {
     if [ -f ./target/debug/$NAME ]; then
-        RUST_LOG=sso ./target/debug/$NAME & echo $! > run.pid
+        RUST_LOG=sso ./target/debug/$NAME example.toml & echo $! > run.pid
     fi
 }
 

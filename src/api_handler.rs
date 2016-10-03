@@ -1,16 +1,16 @@
 extern crate rustc_serialize;
 
-use url;
+// use url;
 
-use nickel::{Nickel, HttpRouter, QueryString, StaticFilesHandler};
+use nickel::{Nickel, HttpRouter, QueryString};
 use std::str;
 // use std::sync::{Arc, Mutex};
 // use std::io::Read;
 // use std::error::Error;
 use nickel::mimes::MediaType;
-use nickel::status::*;
+// use nickel::status::*;
 use serialize::json;
-use time;
+// use time;
 use Context;
 
 // module
