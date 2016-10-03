@@ -1,0 +1,15 @@
+dn: uid=budi,ou=People,dc=ansvia,dc=org
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: budi
+sn: Budi
+givenName: Budi
+cn: Budi Tejo
+displayName: Budi Tejo Hartono
+uidNumber: 10001
+gidNumber: 5000
+userPassword: bc$1234567891234567$1+nvY6LjCrKDdVByobqKuzeCs7dlHC/P
+gecos: Budi Tejo
+loginShell: /bin/bash
+homeDirectory: /home/budi
