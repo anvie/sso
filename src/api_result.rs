@@ -40,14 +40,29 @@ pub struct SystemInfo {
 }
 
 pub fn success<T>(result: T) -> ApiResult<T> {
-    ApiResult{ error: Default::default(), result : result }
+    ApiResult { error: Default::default(), result : result }
 }
 
+pub fn error(code:i32, desc:&str) -> ApiResult<String> {
+    ApiResult { error: ErrorResp { code: code, desc: desc.to_string() }, result : "".to_string() }
+}
 
 macro_rules! api_result_success_json {
     ($result: expr, $resp: ident) => {
         {
             let api_result = api_result::success($result);
+            let result = json::encode(&api_result).unwrap();
+
+            $resp.set(MediaType::Json);
+            result
+        }
+    }
+}
+
+macro_rules! api_result_error_json {
+    ($code: expr, $desc: expr, $resp: ident) => {
+        {
+            let api_result = api_result::error($code, $desc);
             let result = json::encode(&api_result).unwrap();
 
             $resp.set(MediaType::Json);

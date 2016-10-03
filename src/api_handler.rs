@@ -2,7 +2,7 @@ extern crate rustc_serialize;
 
 use url;
 
-use nickel::{Nickel, HttpRouter, QueryString, StaticFilesHandler, JsonBody};
+use nickel::{Nickel, HttpRouter, QueryString, StaticFilesHandler};
 use std::str;
 // use std::sync::{Arc, Mutex};
 // use std::io::Read;
@@ -18,6 +18,7 @@ use Context;
 use api_result;
 use utils;
 use build;
+use errno;
 
 pub fn setup(ctx:&Context, server: &mut Nickel){
 
@@ -51,7 +52,7 @@ pub fn setup(ctx:&Context, server: &mut Nickel){
             },
             _ => {
                 warn!("Invalid access token or already expired: {}", access_token);
-                format!("None")
+                api_result_error_json!(errno::INVALID_TOKEN, errno::INVALID_TOKEN_STR, _resp)
             }
         }
 

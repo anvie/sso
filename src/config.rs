@@ -10,7 +10,7 @@ const DEFAULT_DB_STORE:&'static str = "/tmp/sso-store";
 // inline simple read parsed toml object macro
 macro_rules! simple_toml_read {
     ($toml:ident, $a:tt) => {
-        match $toml.get("data_store"){
+        match $toml.get($a){
             Some(&Value::String(ref s)) => s.to_string(),
             _ => DEFAULT_DB_STORE.to_string()
         }
@@ -18,13 +18,15 @@ macro_rules! simple_toml_read {
 }
 
 pub struct Conf {
-    pub data_store:String
+    pub data_store:String,
+    pub allowed_continue_domain:String
 }
 
 impl Default for Conf {
     fn default() -> Conf {
         Conf {
-            data_store: String::new()
+            data_store: String::new(),
+            allowed_continue_domain: String::new()
         }
     }
 }
@@ -46,9 +48,11 @@ impl Conf {
                 debug!("toml: {:?}", toml);
 
                 let data_store = simple_toml_read!(toml, "data_store");
+                let allowed_continue_domain = simple_toml_read!(toml, "allowed_continue_domain");
 
                 Conf {
-                    data_store: data_store
+                    data_store: data_store,
+                    allowed_continue_domain: allowed_continue_domain
                 }
             },
             None => Default::default()

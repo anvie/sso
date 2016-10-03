@@ -2,8 +2,12 @@ use url;
 
 use serialize::base64::{self, ToBase64, FromBase64};
 use serialize::hex::FromHex;
+use serialize::json;
+use nickel::MediaType;
 use std::collections::HashMap;
 use nickel::{Nickel, HttpRouter, QueryString, StaticFilesHandler};
+use nickel::status::StatusCode;
+use nickel::extensions::Redirect;
 use std::str;
 use std::sync::{Arc, Mutex};
 use crypto::bcrypt;
@@ -13,13 +17,16 @@ use std::io::Read;
 use std::error::Error;
 use oldap::codes;
 use oldap::errors::*;
+use regex::Regex;
+use url::{Url, ParseError};
 
 // module
 use ldap;
 use store::Store;
 use token;
 use Context;
-
+use api_result;
+use errno;
 
 fn check_password(challenge_password: &String, password: &String) -> bool {
     let algo = &challenge_password[..6];
@@ -57,6 +64,22 @@ pub fn setup(ctx:&Context, server: &mut Nickel){
 
     let store = ctx.store.clone();
 
+    let re_str = format!(r"^https?://[a-zA-Z0-9\.\\-_]+({}).+$", ctx.conf.allowed_continue_domain.replace(".", "\\."));
+    debug!("re_str: {}", re_str);
+
+
+    // @FIXME
+    let url_re = Regex::new("^https?://.+$").unwrap();
+
+
+    let cont_re = match Regex::new(&re_str){
+        Ok(_r) => _r,
+        Err(e) => {
+            error!("{:?}", e);
+            panic!("Invalid `allowed_continue_domain` format, please check your configuration file.")
+        }
+    };
+
     server.post("/login", middleware! { |_req, mut _resp|
 
         let mut user_name = String::new();
@@ -84,7 +107,7 @@ pub fn setup(ctx:&Context, server: &mut Nickel){
         // debug!("after (user_name): {:?}", store.get("user_name"));
 
         let query = _req.query();
-        let cont = query.get("continue").unwrap_or("/");
+        let cont = query.get("continue").unwrap_or("?");
 
 
         debug!("user_name: {:?}", user_name);
@@ -128,7 +151,10 @@ pub fn setup(ctx:&Context, server: &mut Nickel){
                 println!("userPassword: {:?}, check_password(): {}", user_password, password_is_ok);
 
                 if (!password_is_ok){
-                    return _resp.send("Access Denied");
+                    // return _resp.send("Access Denied");
+
+                    let result = api_result_error_json!(errno::UNAUTHORIZED, errno::UNAUTHORIZED_STR, _resp);
+                    return _resp.send(result);
                 }
 
                 // for debugging purposes only.
@@ -158,16 +184,42 @@ pub fn setup(ctx:&Context, server: &mut Nickel){
                 store.put(&generated_token, &user_name);
                 store.put(&user_name, &generated_token); // for reverse lookup
 
-                _resp.headers_mut().set_raw("Content-type", vec![b"text/plain".to_vec()]);
+                // _resp.headers_mut().set_raw("Content-type", vec![b"text/plain".to_vec()]);
 
                 //format!("continue to: {}\n  {:?}", cont, result)
                 // format!("Oke, continue to: {}, result:\n{}", cont, result_str)
-                format!("Access Granted. Token: {}. Continue to: {}", generated_token, cont)
+                // format!("Access Granted. Token: {}. Continue to: {}", generated_token, cont)
+
+                // if cont.starts_with("/") | cont.starts_with("http://") {
+                //
+                // }
+
+                debug!("cont: {}", cont);
+
+                if cont_re.is_match(cont){
+                    // _resp.headers_mut().set(Location(cont.into()));
+                    // _resp.set(StatusCode::PermanentRedirect)
+                    //     .set(Location(cont.into()));
+                    // "".to_string()
+
+                    let mut url = Url::parse(cont).unwrap();
+                    url.query_pairs_mut().append_pair("token", &generated_token);
+
+                    return _resp.redirect(url.into_string());
+
+                }else if url_re.is_match(cont){
+                    api_result_error_json!(errno::UNAUTHORIZED, errno::UNAUTHORIZED_STR, _resp)
+                }else{
+                    api_result_success_json!(generated_token, _resp)
+                }
+
+
             },
             Err(err) => {
                 match err.description().as_ref() {
                     "No such object" => {
-                        format!("Credential for `{}` didn't exists.", user_name)
+                        // format!("Credential for `{}` didn't exists.", user_name)
+                        api_result_error_json!(errno::UNAUTHORIZED, errno::UNAUTHORIZED_STR, _resp)
                     },
                     another_error =>
                         format!("Error: {}", another_error)
