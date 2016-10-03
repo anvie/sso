@@ -17,6 +17,7 @@ use Context;
 
 use api_result;
 use utils;
+use build;
 
 pub fn setup(ctx:&Context, server: &mut Nickel){
 
@@ -25,7 +26,9 @@ pub fn setup(ctx:&Context, server: &mut Nickel){
     server.get("/api/system/info", middleware! { |_req, mut _resp|
 
         api_result_success_json!(api_result::SystemInfo {
-            server_time: utils::current_time_millis()
+            server_time: utils::current_time_millis(),
+            git_rev: build::GIT_REV.to_string(),
+            version: build::VERSION.to_string()
         }, _resp)
 
     });

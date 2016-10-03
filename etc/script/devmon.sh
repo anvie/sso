@@ -34,6 +34,7 @@ function kill_it {
 }
 
 function compile_it {
+    make version
     cargo build
 }
 

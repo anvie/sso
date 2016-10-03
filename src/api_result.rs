@@ -34,7 +34,9 @@ impl Cred {
 
 #[derive(Decodable, Encodable)]
 pub struct SystemInfo {
-    pub server_time: u64
+    pub server_time: u64,
+    pub git_rev: String,
+    pub version: String
 }
 
 pub fn success<T>(result: T) -> ApiResult<T> {

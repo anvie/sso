@@ -26,6 +26,7 @@ mod store;
 mod token;
 #[macro_use] mod api_result;
 mod utils;
+mod build;
 
 // handlers
 mod login_handler;
