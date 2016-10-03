@@ -1,11 +1,30 @@
-Web Single-sign-on template
+Web Single-sign-on framework
 =============================
 
-This is web template for building single-sign-on UI written in Rust.
+Single-sign-on framework written in Rust.
 
+**Features**:
+
+1. Open LDAP integration.
+2. Embedded/Stand-alone session store backed by RocksDB.
+3. Web UI interface for login and "soon" for access control management.
+4. Restful API.
+
+**Ingredients**:
+
+* Open LDAP
+* Nickel
+* Semantic UI
+* RocksDB
 
 Development
 -------------
+
+**Prerequisites**
+
+1. Rust nightly.
+2. Open LDAP.
+3. Inotify (for hot-reload/auto-compile).
 
 For first init, please type:
 
