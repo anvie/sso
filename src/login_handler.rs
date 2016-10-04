@@ -65,7 +65,7 @@ pub fn setup(ctx:&Context, server: &mut Nickel){
     let store = ctx.store.clone();
 
     // for security reason we only accept for specific domain/sub-domain provided in config.
-    let re_str = format!(r"^https?://[a-zA-Z0-9\.\\-_]*({}).+$", ctx.conf.allowed_continue_domain.replace(".", "\\."));
+    let re_str = format!(r"^https?://[a-zA-Z0-9\.\\-_]*({}).*$", ctx.conf.allowed_continue_domain.replace(".", "\\."));
     debug!("re_str: {}", re_str);
 
 

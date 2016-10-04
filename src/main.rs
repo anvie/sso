@@ -69,6 +69,9 @@ fn main() {
     };
 
     debug!("data_store: {:?}", ctx.conf.data_store);
+    debug!("ldap.uri: {}", ctx.conf.ldap.uri);
+    debug!("ldap.admin_user: {}", ctx.conf.ldap.admin_user);
+    debug!("ldap.admin_password: {}", ctx.conf.ldap.admin_password);
 
     println!("Starting...");
 

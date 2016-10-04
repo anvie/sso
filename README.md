@@ -20,7 +20,7 @@ Single-sign-on framework written in Rust.
 Development
 -------------
 
-**Prerequisites**
+**Prerequisites**:
 
 1. Rust nightly.
 2. Open LDAP.
