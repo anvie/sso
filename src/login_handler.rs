@@ -6,7 +6,7 @@ use serialize::json;
 use nickel::MediaType;
 use std::collections::HashMap;
 use nickel::{Nickel, HttpRouter, QueryString, StaticFilesHandler};
-use nickel::status::StatusCode;
+// use nickel::status::StatusCode;
 use nickel::extensions::Redirect;
 use std::str;
 // use std::sync::{Arc, Mutex};
@@ -176,28 +176,30 @@ pub fn setup(ctx:&Context, server: &mut Nickel){
                 //     }
                 // }
 
-                // @TODO(robin): generate real token here
+
                 let generated_token = token::generate();
+                let dn_key = format!("dn_{}", &generated_token);
+
                 match store.get(&user_name){
                     Some(old_token) => {
-                        store.del(&old_token)
+                        store.batch()
+                            .del(&old_token)
+                            .del(&dn_key)
+                            .commit()
                     },
                     _ => ()
                 }
-                store.put(&generated_token, &user_name);
-                store.put(&user_name, &generated_token); // for reverse lookup
+                // store.put(&generated_token, &user_name);
+                // store.put(&user_name, &generated_token); // for reverse lookup
+                // store.put(&format!("dn_{}", &generated_token), &dn);
 
-                // _resp.headers_mut().set_raw("Content-type", vec![b"text/plain".to_vec()]);
+                store.batch()
+                    .put(&generated_token, &user_name)
+                    .put(&user_name, &generated_token)
+                    .put(&dn_key, &dn)
+                    .commit();
 
-                //format!("continue to: {}\n  {:?}", cont, result)
-                // format!("Oke, continue to: {}, result:\n{}", cont, result_str)
-                // format!("Access Granted. Token: {}. Continue to: {}", generated_token, cont)
-
-                // if cont.starts_with("/") | cont.starts_with("http://") {
-                //
-                // }
-
-                debug!("cont: {}", cont);
+                debug!("continue: {}", cont);
 
                 if cont_re.is_match(cont){
                     // _resp.headers_mut().set(Location(cont.into()));

@@ -15,7 +15,8 @@ pub struct ApiResult<T> {
 
 #[derive(Decodable, Encodable)]
 pub struct Cred {
-    uid: String
+    uid: String,
+    dn: String
 }
 
 impl Default for ErrorResp {
@@ -25,9 +26,10 @@ impl Default for ErrorResp {
 }
 
 impl Cred {
-    pub fn new(uid:String) -> Self {
+    pub fn new(uid:String, dn:String) -> Self {
         Cred {
-            uid: uid
+            uid: uid,
+            dn: dn
         }
     }
 }

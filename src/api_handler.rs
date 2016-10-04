@@ -43,12 +43,12 @@ pub fn setup(ctx:&Context, server: &mut Nickel){
 
         debug!("checking access token: {}", access_token);
 
-        match store.get(&access_token){
-            Some(uid) => {
+        match (store.get(&access_token), store.get(&format!("dn_{}", &access_token))){
+            (Some(uid), Some(dn)) => {
                 let info = format!("Authentic for `{}`", uid);
                 debug!("{}", info);
 
-                api_result_success_json!(api_result::Cred::new(uid), _resp)
+                api_result_success_json!(api_result::Cred::new(uid, dn), _resp)
             },
             _ => {
                 warn!("Invalid access token or already expired: {}", access_token);
