@@ -208,34 +208,26 @@ pub fn setup(ctx:&Context, server: &mut Nickel){
 
 
                 let generated_token = token::generate();
-                let dn_key = format!("dn_{}", &generated_token);
 
                 match store.get(&user_name){
                     Some(old_token) => {
                         store.batch()
-                            .del(&old_token)
-                            .del(&dn_key)
+                            .del(&old_token) // remove old token records
+                            .del(&format!("dn_{}", &old_token)) // and it's dn
                             .commit()
                     },
                     _ => ()
                 }
-                // store.put(&generated_token, &user_name);
-                // store.put(&user_name, &generated_token); // for reverse lookup
-                // store.put(&format!("dn_{}", &generated_token), &dn);
 
                 store.batch()
                     .put(&generated_token, &user_name)
-                    .put(&user_name, &generated_token)
-                    .put(&dn_key, &dn)
+                    .put(&user_name, &generated_token) // for reverse loookup
+                    .put(&format!("dn_{}", &generated_token), &dn)
                     .commit();
 
                 debug!("continue: {}", cont);
 
                 if cont_re.is_match(cont){
-                    // _resp.headers_mut().set(Location(cont.into()));
-                    // _resp.set(StatusCode::PermanentRedirect)
-                    //     .set(Location(cont.into()));
-                    // "".to_string()
 
                     let mut url = Url::parse(cont).unwrap();
                     url.query_pairs_mut().append_pair("token", &generated_token);
