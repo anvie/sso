@@ -63,6 +63,7 @@ fn check_password(challenge_password: &String, password: &String) -> bool {
 pub fn setup(ctx:&Context, server: &mut Nickel){
 
     let store = ctx.store.clone();
+    let conf = ctx.conf.clone();
 
     // for security reason we only accept for specific domain/sub-domain provided in config.
     let re_str = format!(r"^https?://[a-zA-Z0-9\.\\-_]*({}).*$", ctx.conf.allowed_continue_domain.replace(".", "\\."));
@@ -119,11 +120,12 @@ pub fn setup(ctx:&Context, server: &mut Nickel){
         // let conn = conn.clone();
         // let conn = conn.lock().unwrap();
 
-        let conn = ldap::connect("ldap://127.0.0.1", "admin", "123123");
+        let dn = query.get("dn").unwrap_or("dc=ansvia,dc=org").to_string();
+        let conn = ldap::connect(&conf.ldap.uri, &conf.ldap.admin_user,
+            &conf.ldap.admin_password, &dn);
 
-        let org = query.get("org").unwrap_or("ansvia").to_string();
 
-        let dn_query = &format!("uid={},ou=People,dc={},dc=org", user_name, org);
+        let dn_query = &format!("uid={},ou=People,{}", user_name, dn);
 
         debug!("dn_query: {}", dn_query);
 
@@ -223,7 +225,9 @@ pub fn setup(ctx:&Context, server: &mut Nickel){
                         api_result_error_json!(errno::UNAUTHORIZED, errno::UNAUTHORIZED_STR, _resp)
                     },
                     another_error =>
-                        format!("Error: {}", another_error)
+                        api_result_error_json!(errno::INTERNAL_SERVER_ERROR,
+                            &format!("Cannot binding to LDAP service. {}.", another_error), _resp)
+                        // format!("Error: {}", another_error)
                 }
 
             }

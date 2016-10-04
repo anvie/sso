@@ -3,9 +3,15 @@ use oldap::*;
 use oldap::errors::*;
 
 
-pub fn connect(uri:&str, admin:&str, password:&str) -> RustLDAP {
+pub fn connect(uri:&str, admin:&str, password:&str, dn:&str) -> RustLDAP {
     let conn = RustLDAP::new(uri).unwrap();
     conn.set_option(codes::options::LDAP_OPT_PROTOCOL_VERSION, &codes::versions::LDAP_VERSION3);
-    conn.simple_bind(&format!("cn={},dc=ansvia,dc=org", admin), password).unwrap();
-    conn
+
+    match conn.simple_bind(&format!("cn={},{}", admin, dn), password){
+        Ok(_) => conn, // ini gak salah, bener
+        Err(e) => {
+            error!("{}", e);
+            panic!("Cannot binding ldap connection")
+        }
+    }
 }

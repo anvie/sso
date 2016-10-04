@@ -40,3 +40,23 @@ By default `devmon.sh` using `example.toml` as the config file, if you have your
 you can set via env var, eg:
 
     $ CONFIG=dev.toml ./etc/script/devmon.sh
+
+
+API docs
+-------------------
+
+**/api/lookup**
+
+Lookup access token for getting `uid`.
+
+Parameters:
+
+* `access_token` - access token gained from authorization step (login).
+
+**/api/system/info**
+
+For getting system information contains:
+
+* server time.
+* version.
+* git revision.

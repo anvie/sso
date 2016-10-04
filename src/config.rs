@@ -23,9 +23,9 @@ macro_rules! simple_toml_read {
     }
 }
 
+#[derive(Clone)]
 pub struct LdapConf {
     pub uri:String,
-    pub dn:String,
     pub admin_user:String,
     pub admin_password:String
 }
@@ -38,6 +38,7 @@ impl Default for LdapConf {
     }
 }
 
+#[derive(Clone)]
 pub struct Conf {
     pub data_store:String,
     pub allowed_continue_domain:String,
@@ -74,7 +75,6 @@ impl Conf {
                 let allowed_continue_domain = simple_toml_read!(toml, "allowed_continue_domain", "".to_string());
                 let ldap_conf = LdapConf {
                     uri : simple_toml_read!(toml, "ldap", "uri", "".to_string()),
-                    dn : simple_toml_read!(toml, "ldap", "dn", "".to_string()),
                     admin_user : simple_toml_read!(toml, "ldap", "admin_user", "".to_string()),
                     admin_password : simple_toml_read!(toml, "ldap", "admin_password", "".to_string())
                 };
