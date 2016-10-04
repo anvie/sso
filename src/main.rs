@@ -79,12 +79,16 @@ fn main() {
 
     server.utilize(StaticFilesHandler::new("static/"));
 
+    let conf = ctx.conf.clone();
+
     server.get("/", middleware! { |_req, _resp|
         let mut data = HashMap::new();
         let query = _req.query();
         let cont:String = utils::encode_url(query.get("continue").unwrap_or("/"));
         debug!("cont: {}", cont);
         data.insert("continue", cont);
+        data.insert("login_caption", conf.login_caption.clone());
+        data.insert("version", build::VERSION.to_string());
         return _resp.render("tmpl/index.html", &data);
     });
 

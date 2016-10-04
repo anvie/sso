@@ -1,4 +1,6 @@
 
+login_caption = "SSO Server"
+
 data_store = "/tmp/sso-store"
 
 allowed_continue_domain = ".?localhost.net|.?example.com"

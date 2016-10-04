@@ -42,7 +42,8 @@ impl Default for LdapConf {
 pub struct Conf {
     pub data_store:String,
     pub allowed_continue_domain:String,
-    pub ldap: LdapConf
+    pub ldap: LdapConf,
+    pub login_caption:String
 }
 
 impl Default for Conf {
@@ -50,7 +51,7 @@ impl Default for Conf {
         Conf {
             data_store: String::new(),
             allowed_continue_domain: String::new(),
-            ldap: Default::default()
+            ..Default::default()
         }
     }
 }
@@ -82,7 +83,8 @@ impl Conf {
                 Conf {
                     data_store: data_store,
                     allowed_continue_domain: allowed_continue_domain,
-                    ldap: ldap_conf
+                    ldap: ldap_conf,
+                    login_caption: simple_toml_read!(toml, "login_caption", "".to_string())
                 }
             },
             None => Default::default()

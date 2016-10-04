@@ -24,7 +24,9 @@
     <body>
         <div class="ui middle aligned center aligned grid">
             <div class="column" style="max-width: 500px;">
-                <h1 class="ui teal header">Welcome to SSO (v0.0.1)</h1>
+                <h1 class="ui teal header">{{login_caption}}</h1>
+
+                <div style="margin-bottom: 20px;">v{{version}}</div>
 
                 <form class="ui large form" action="/login?continue={{continue}}&dn%3Dansvia,dc%3Dorg" method="POST">
                     <div class="field">
