@@ -24,7 +24,8 @@ Development
 
 1. Rust nightly.
 2. Open LDAP.
-3. Inotify (for hot-reload/auto-compile).
+3. RocksDB lib.
+4. Inotify (for hot-reload/auto-compile).
 
 For first init, please type:
 
@@ -41,6 +42,22 @@ you can set via env var, eg:
 
     $ CONFIG=dev.toml ./etc/script/devmon.sh
 
+Troubleshooting
+----------------
+
+If you see error like this during build:
+
+    error: file not found for module `build`
+
+you need to type `make` first before `cargo build`.
+
+If linker error like this:
+
+    ld: library not found for -lrocksdb
+
+you need to install rocksdb lib first, in OS X using Homebrew you can simply type:
+
+    $ brew install rocksdb
 
 API docs
 -------------------
