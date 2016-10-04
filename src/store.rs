@@ -60,6 +60,7 @@ impl Store {
 //      .commit();
 //
 impl<'a> WriteBatchWrapper<'a> {
+
     pub fn put(self, key:&str, value:&str) -> Self {
         self.wb.put(key.as_bytes(), value.as_bytes());
         self

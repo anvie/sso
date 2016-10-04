@@ -50,7 +50,10 @@ function ctrl_c() {
 trap ctrl_c INT
 
 compile_it
-run_it
+
+if [ "$COMPILE_ONLY" != "YES" ]; then
+    run_it
+fi
 
 while inotifywait -e modify -r tmpl/ src/; do
     kill_it
