@@ -11,3 +11,4 @@ pub static BAD_REQUEST_STR:&'static str = "Bad request";
 pub static UNAUTHORIZED_STR:&'static str = "Access denied";
 pub static NOT_FOUND_STR:&'static str = "Not found";
 pub static INVALID_TOKEN_STR:&'static str = "Invalid token";
+pub static INTERNAL_SERVER_ERROR_STR:&'static str = "Internal server error";

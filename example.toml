@@ -5,6 +5,5 @@ allowed_continue_domain = ".?localhost.net|.?example.com"
 
 [ldap]
 uri = "ldap://127.0.0.1"
-dn = "dc=example,dc=com"
 admin_user = "admin"
 admin_password = "123"
