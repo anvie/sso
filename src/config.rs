@@ -9,13 +9,13 @@ const DEFAULT_DB_STORE:&'static str = "/tmp/sso-store";
 
 // inline simple read parsed toml object macro
 macro_rules! simple_toml_read {
-    ($toml:ident, $a:tt, $dflt:expr) => {
+    ($toml:ident, $a:expr, $dflt:expr) => {
         match $toml.get($a){
             Some(&Value::String(ref s)) => s.to_string(),
             _ => $dflt
         }
     };
-    ($toml:ident, $tbl:tt, $a:tt, $dflt:expr) => {
+    ($toml:ident, $tbl:expr, $a:tt, $dflt:expr) => {
         match $toml.get($tbl){
             Some(&Value::Table(ref _tbl)) => simple_toml_read!(_tbl, $a, $dflt),
             _ => $dflt

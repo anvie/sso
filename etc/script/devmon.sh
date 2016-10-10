@@ -25,6 +25,7 @@ if [ -z "$CONFIG" ]; then
 fi
 
 function run_it {
+    echo "Run it ./target/debug/$NAME"
     if [ -f ./target/debug/$NAME ]; then
         RUST_LOG=sso ./target/debug/$NAME $CONFIG & echo $! > run.pid
     fi

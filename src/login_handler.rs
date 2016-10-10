@@ -5,7 +5,7 @@ use serialize::hex::FromHex;
 use serialize::json;
 use nickel::MediaType;
 use std::collections::HashMap;
-use nickel::{Nickel, HttpRouter, QueryString, StaticFilesHandler};
+use nickel::{Nickel, HttpRouter, QueryString, StaticFilesHandler, Response, NickelError};
 // use nickel::status::StatusCode;
 use nickel::extensions::Redirect;
 use std::str;
@@ -19,6 +19,8 @@ use oldap::codes;
 // use oldap::errors::*;
 use regex::Regex;
 use url::{Url, ParseError};
+use mustache::{self, MapBuilder};
+use nickel_mustache::Render;
 
 // module
 use ldap;
@@ -27,6 +29,36 @@ use token;
 use Context;
 use api_result;
 use errno;
+use build;
+use utils;
+
+
+macro_rules! show_error{
+    ($error:expr, $cont:expr, $conf:ident, $_resp:ident) => {{
+        // let mut data = HashMap::new();
+        let cont:String = utils::encode_url($cont);
+
+        let data = MapBuilder::new()
+            .insert_str("continue", cont)
+            .insert_str("login_caption", $conf.login_caption.clone())
+            .insert_str("version", build::VERSION.to_string())
+            .insert_bool("error", true)
+            .insert_str("error_desc", $error.to_string())
+            .build();
+
+        // data.insert("continue", cont.to_string());
+        // data.insert("login_caption", $conf.login_caption.clone());
+        // data.insert("version", build::VERSION.to_string());
+        // data.insert("error", true);
+        // data.insert("error_desc", $error.to_string());
+
+        // return $_resp.render("tmpl/index.html", &data);
+
+
+        return Render::render_data($_resp, "tmpl/index.html", &data);
+    }}
+}
+
 
 fn check_password(challenge_password: &String, password: &String) -> bool {
     let algo = &challenge_password[..6];
@@ -114,12 +146,6 @@ pub fn setup(ctx:&Context, server: &mut Nickel){
 
         debug!("user_name: {:?}", user_name);
 
-        // let userName = query.get("user_name").unwrap();
-        // let password = query.get("password").unwrap();
-
-        // let conn = conn.clone();
-        // let conn = conn.lock().unwrap();
-
         let dn = query.get("dn").unwrap_or("dc=ansvia,dc=org").to_string();
         let conn = ldap::connect(&conf.ldap.uri, &conf.ldap.admin_user,
             &conf.ldap.admin_password, &dn);
@@ -156,8 +182,12 @@ pub fn setup(ctx:&Context, server: &mut Nickel){
                 if (!password_is_ok){
                     // return _resp.send("Access Denied");
 
-                    let result = api_result_error_json!(errno::UNAUTHORIZED, errno::UNAUTHORIZED_STR, _resp);
-                    return _resp.send(result);
+                    // let result = api_result_error_json!(errno::UNAUTHORIZED, errno::UNAUTHORIZED_STR, _resp);
+                    // return _resp.send(result);
+
+
+                    show_error!("Identitas atau kata kunci tidak benar, mohon pastikan identitas atau kata kunci yang Anda masukkan benar.",
+                            cont, conf, _resp);
                 }
 
                 // for debugging purposes only.
@@ -213,7 +243,12 @@ pub fn setup(ctx:&Context, server: &mut Nickel){
                     return _resp.redirect(url.into_string());
 
                 }else if url_re.is_match(cont){
-                    api_result_error_json!(errno::UNAUTHORIZED, errno::UNAUTHORIZED_STR, _resp)
+                    // api_result_error_json!(errno::UNAUTHORIZED, errno::UNAUTHORIZED_STR, _resp)
+
+                    // return _resp.send(show_error(ctx, "Identitas atau kata kunci salah", cont, &_resp));
+
+                    show_error!("Identitas atau kata kunci tidak benar, mohon pastikan identitas atau kata kunci yang Anda masukkan benar.",
+                            cont, conf, _resp)
                 }else{
                     api_result_success_json!(generated_token, _resp)
                 }
@@ -224,11 +259,18 @@ pub fn setup(ctx:&Context, server: &mut Nickel){
                 match err.description().as_ref() {
                     "No such object" => {
                         // format!("Credential for `{}` didn't exists.", user_name)
-                        api_result_error_json!(errno::UNAUTHORIZED, errno::UNAUTHORIZED_STR, _resp)
+                        // api_result_error_json!(errno::UNAUTHORIZED, errno::UNAUTHORIZED_STR, _resp)
+
+                        show_error!("Kredensial tidak ditemukan, mohon periksa identitas masuk Anda.",
+                                cont, conf, _resp)
                     },
                     another_error =>
-                        api_result_error_json!(errno::INTERNAL_SERVER_ERROR,
-                            &format!("Cannot binding to LDAP service. {}.", another_error), _resp)
+                        // api_result_error_json!(errno::INTERNAL_SERVER_ERROR,
+                        //     &format!("Cannot binding to LDAP service. {}.", another_error), _resp)
+
+                        show_error!("Internal server error. Gagal terhubung dengan server LDAP.",
+                                cont, conf, _resp)
+
                         // format!("Error: {}", another_error)
                 }
 

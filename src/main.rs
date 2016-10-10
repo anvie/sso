@@ -12,6 +12,8 @@ extern crate toml;
 extern crate rand;
 extern crate time;
 extern crate regex;
+extern crate mustache;
+extern crate nickel_mustache;
 
 
 use serialize::base64::{self, ToBase64};

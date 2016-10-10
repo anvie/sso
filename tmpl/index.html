@@ -7,10 +7,8 @@
 
         <title>Welcome to SSO (v0.0.1)</title>
 
-
+        <script type="text/javascript" src="/assets/js/jquery-3.1.1.min.js"></script>
         <script type="text/javascript" src="/assets/js/semantic.min.js"></script>
-
-        <link rel="stylesheet" href="/assets/css/semantic.min.css" class="ui" charset="utf-8">
 
         <style media="screen">
             body {
@@ -28,17 +26,26 @@
 
                 <div style="margin-bottom: 20px;">v{{version}}</div>
 
+                {{#error}}
+                <div class="ui negative message">
+                    <i class="close icon"></i>
+                    <p>
+                        {{error_desc}}
+                    </p>
+                </div>
+                {{/error}}
+
                 <form class="ui large form" action="/login?continue={{continue}}&dn%3Dansvia,dc%3Dorg" method="POST">
                     <div class="field">
                         <div class="ui left icon input">
                             <i class="user icon"></i>
-                            <input type="text" name="user_name" value="" placeholder="Identity">
+                            <input type="text" name="user_name" value="" placeholder="Identitas">
                         </div>
                     </div>
                     <div class="field">
                         <div class="ui left icon input">
                             <i class="lock icon"></i>
-                            <input type="password" name="password" value="" placeholder="Password">
+                            <input type="password" name="password" value="" placeholder="Kata kunci">
                         </div>
 
                     </div>
@@ -46,5 +53,18 @@
                 </form>
             </div>
         </div>
+
+
+        <link rel="stylesheet" href="/assets/css/semantic.min.css" class="ui" charset="utf-8">
+
+        <script type="text/javascript">
+            $('.message .close')
+            .on('click', function() {
+                $(this)
+                  .closest('.message')
+                  .transition('fade');
+            });
+        </script>
+
     </body>
 </html>
