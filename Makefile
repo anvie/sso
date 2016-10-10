@@ -12,7 +12,7 @@ src/build.rs:
 	@@if [ "$(GIT_BRANCH) $(GIT_REV) $(VERSION)" != "$(REV_FILE)" ]; then \
 		echo $(GIT_BRANCH) $(GIT_REV) $(VERSION) > rev.log; \
 		echo "Generating build.rs ..."; \
-		echo "// this is auto-generated file, don't edit this by your dirty hands bitch!!" > src/build.rs; \
+		echo "// this is auto-generated file, don't edit this by your dirty hands!!" > src/build.rs; \
 		echo "pub const GIT_REV:&'static str = \"$(GIT_REV) ($(GIT_BRANCH))\";" >> src/build.rs; \
 		echo "pub const VERSION:&'static str =  \"$(VERSION)\";" >> src/build.rs; \
 	fi
