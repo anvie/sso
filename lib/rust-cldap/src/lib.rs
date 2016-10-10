@@ -137,7 +137,7 @@ impl LDAPOptionValue for bool {
     fn as_cvoid_ptr(&self) -> *const c_void {
         match *self {
             true => {
-                let mem = boxed::Box::new(&ber_pvt_opt_on);
+                let mem = unsafe { boxed::Box::new(&ber_pvt_opt_on) };
                 boxed::Box::into_raw(mem) as *const c_void
             },
             false => {
