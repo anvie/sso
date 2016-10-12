@@ -1,11 +1,11 @@
 use url;
 
-use serialize::base64::{self, ToBase64, FromBase64};
-use serialize::hex::FromHex;
+use serialize::base64::{FromBase64};
+// use serialize::hex::FromHex;
 use serialize::json;
 use nickel::MediaType;
-use std::collections::HashMap;
-use nickel::{Nickel, HttpRouter, QueryString, StaticFilesHandler, Response, NickelError};
+// use std::collections::HashMap;
+use nickel::{Nickel, HttpRouter, QueryString, Response};
 // use nickel::status::StatusCode;
 use nickel::extensions::Redirect;
 use std::str;
@@ -19,7 +19,7 @@ use oldap::codes;
 // use oldap::errors::*;
 use regex::Regex;
 use url::{Url, ParseError};
-use mustache::{self, MapBuilder};
+use mustache::{MapBuilder};
 use nickel_mustache::Render;
 
 // module
@@ -28,7 +28,7 @@ use ldap;
 use token;
 use Context;
 use api_result;
-use errno;
+// use errno;
 use build;
 use utils;
 
@@ -125,8 +125,8 @@ pub fn setup(ctx:&Context, server: &mut Nickel){
             _req.origin.read_to_string(&mut body).unwrap();
 
             for (key, value) in url::form_urlencoded::parse(body.as_bytes()){
-                if (key == "user_name") { user_name = value.clone().into_owned(); }
-                if (key == "password") { given_password = value.clone().into_owned(); }
+                if key == "user_name" { user_name = value.clone().into_owned(); }
+                if key == "password" { given_password = value.clone().into_owned(); }
             }
 
         }
@@ -173,13 +173,13 @@ pub fn setup(ctx:&Context, server: &mut Nickel){
                     }
                 };
 
-                let mut result_str = "".to_owned();
+                // let mut result_str = "".to_owned();
 
                 let password_is_ok = check_password(&user_password, &given_password);
 
                 // debug!("userPassword: {:?}, check_password(): {}", user_password, password_is_ok);
 
-                if (!password_is_ok){
+                if !password_is_ok {
                     // return _resp.send("Access Denied");
 
                     // let result = api_result_error_json!(errno::UNAUTHORIZED, errno::UNAUTHORIZED_STR, _resp);
@@ -256,14 +256,17 @@ pub fn setup(ctx:&Context, server: &mut Nickel){
                         show_error!("Kredensial tidak ditemukan, mohon periksa identitas masuk Anda.",
                                 cont, conf, _resp)
                     },
-                    another_error =>
+                    another_error => {
                         // api_result_error_json!(errno::INTERNAL_SERVER_ERROR,
                         //     &format!("Cannot binding to LDAP service. {}.", another_error), _resp)
+
+                        error!("Cannot binding to LDAP service. {}.", another_error);
 
                         show_error!("Internal server error. Gagal terhubung dengan server LDAP.",
                                 cont, conf, _resp)
 
                         // format!("Error: {}", another_error)
+                    }
                 }
 
             }

@@ -1,6 +1,6 @@
 
 use oldap::*;
-use oldap::errors::*;
+// use oldap::errors::*;
 
 
 pub fn connect(uri:&str, admin:&str, password:&str, dn:&str) -> RustLDAP {

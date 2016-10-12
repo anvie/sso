@@ -17,15 +17,15 @@ extern crate nickel_mustache;
 
 
 use serialize::base64::{self, ToBase64};
-use serialize::hex::FromHex;
+// use serialize::hex::FromHex;
 use std::collections::HashMap;
 use nickel::{Nickel, HttpRouter, QueryString, StaticFilesHandler};
-use url::percent_encoding::{utf8_percent_encode, DEFAULT_ENCODE_SET};
+// use url::percent_encoding::{utf8_percent_encode, DEFAULT_ENCODE_SET};
 
 use std::{str, env};
 use std::sync::{Arc, Mutex};
 use crypto::bcrypt;
-use std::io::Read;
+// use std::io::Read;
 
 mod config;
 mod ldap;
@@ -110,5 +110,5 @@ fn main() {
     api_handler::setup(&ctx, &mut server);
     login_handler::setup(&ctx, &mut server);
 
-    server.listen("127.0.0.1:8080");
+    server.listen("127.0.0.1:8080").unwrap();
 }

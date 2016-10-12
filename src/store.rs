@@ -47,7 +47,7 @@ impl Store {
     }
 
     pub fn commit(&self, wbw:WriteBatchWrapper){
-        self.db.write(wbw.wb);
+        self.db.write(wbw.wb).unwrap();
     }
 }
 
@@ -62,7 +62,7 @@ impl Store {
 impl<'a> WriteBatchWrapper<'a> {
 
     pub fn put(self, key:&str, value:&str) -> Self {
-        self.wb.put(key.as_bytes(), value.as_bytes());
+        self.wb.put(key.as_bytes(), value.as_bytes()).unwrap();
         self
     }
 
@@ -72,6 +72,6 @@ impl<'a> WriteBatchWrapper<'a> {
     }
 
     pub fn commit(self){
-        self.db.write(self.wb);
+        self.db.write(self.wb).unwrap();
     }
 }

@@ -33,7 +33,9 @@ pub struct LdapConf {
 impl Default for LdapConf {
     fn default() -> LdapConf {
         LdapConf {
-            ..Default::default()
+            uri: String::new(),
+            admin_user: String::new(),
+            admin_password: String::new()
         }
     }
 }
@@ -51,7 +53,8 @@ impl Default for Conf {
         Conf {
             data_store: String::new(),
             allowed_continue_domain: String::new(),
-            ..Default::default()
+            ldap: Default::default(),
+            login_caption: String::new()
         }
     }
 }
