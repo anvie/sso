@@ -1,20 +1,24 @@
 #!/usr/bin/env bash
 
-HOST=103.60.183.23
-WEB_HOME=/home/web
-NAME=${PWD##*/}
-TARGET_PATH=$WEB_HOME/sso/
+CURDIR=`dirname $0`
+. $CURDIR/includes.sh
 
-set -e
 
-function run_on_remate {
-    ssh root@$HOST $@
-}
 
+echo -n "stop running service... "
+run_on_remate svc -d /etc/service/sso
+echo "[done]"
+
+echo -n "updating... "
 scp target/release/$NAME root@$HOST:$TARGET_PATH
-
 rsync -avzrhcP static root@$HOST:$TARGET_PATH
-
 rsync -avzrhcP tmpl root@$HOST:$TARGET_PATH
+echo "[done]"
 
+echo -n "setting permissions... "
 run_on_remate chown -R www-data:www-data $WEB_HOME
+echo "[done]"
+
+echo -n "starting service..."
+run_on_remate svc -u /etc/service/sso
+echo "[done]"
