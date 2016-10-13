@@ -44,7 +44,7 @@ macro_rules! show_error{
             .insert_str("version", build::VERSION.to_string())
             .insert_bool("error", true)
             .insert_str("error_desc", $error.to_string())
-            .insert_str("target_dn", $target_dn.to_string())
+            .insert_str("dn", $target_dn.to_string())
             .build();
 
         // data.insert("continue", cont.to_string());

@@ -72,6 +72,7 @@ fn main() {
 
     debug!("data_store: {:?}", ctx.conf.data_store);
     debug!("ldap.uri: {}", ctx.conf.ldap.uri);
+    debug!("ldap.default_dn: {}", ctx.conf.ldap.default_dn);
     debug!("ldap.admin_user: {}", ctx.conf.ldap.admin_user);
     debug!("ldap.admin_password: {}", ctx.conf.ldap.admin_password);
 
@@ -87,7 +88,7 @@ fn main() {
         let mut data = HashMap::new();
         let query = _req.query();
         let cont:String = utils::encode_url(query.get("continue").unwrap_or("/"));
-        let dn:String = utils::encode_url(query.get("target_dn").unwrap_or("dc=ansvia,dc=org"));
+        let dn:String = utils::encode_url(query.get("target_dn").unwrap_or(&conf.ldap.default_dn));
         debug!("cont: {}, dn: {}", cont, dn);
         data.insert("dn", dn);
         data.insert("continue", cont);
