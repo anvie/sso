@@ -34,7 +34,7 @@ use utils;
 
 
 macro_rules! show_error{
-    ($error:expr, $cont:expr, $conf:ident, $_resp:ident) => {{
+    ($error:expr, $cont:expr, $conf:ident, $target_dn:expr, $_resp:ident) => {{
         // let mut data = HashMap::new();
         let cont:String = utils::encode_url($cont);
 
@@ -44,6 +44,7 @@ macro_rules! show_error{
             .insert_str("version", build::VERSION.to_string())
             .insert_bool("error", true)
             .insert_str("error_desc", $error.to_string())
+            .insert_str("target_dn", $target_dn.to_string())
             .build();
 
         // data.insert("continue", cont.to_string());
@@ -187,7 +188,7 @@ pub fn setup(ctx:&Context, server: &mut Nickel){
 
 
                     show_error!("Identitas atau kata kunci tidak benar, mohon pastikan identitas atau kata kunci yang Anda masukkan benar.",
-                            cont, conf, _resp);
+                            cont, conf, dn, _resp);
                 }
 
                 // for debugging purposes only.
@@ -240,7 +241,7 @@ pub fn setup(ctx:&Context, server: &mut Nickel){
                     // return _resp.send(show_error(ctx, "Identitas atau kata kunci salah", cont, &_resp));
 
                     show_error!("Identitas atau kata kunci tidak benar, mohon pastikan identitas atau kata kunci yang Anda masukkan benar.",
-                            cont, conf, _resp)
+                            cont, conf, dn, _resp)
                 }else{
                     api_result_success_json!(generated_token, _resp)
                 }
@@ -254,7 +255,7 @@ pub fn setup(ctx:&Context, server: &mut Nickel){
                         // api_result_error_json!(errno::UNAUTHORIZED, errno::UNAUTHORIZED_STR, _resp)
 
                         show_error!("Kredensial tidak ditemukan, mohon periksa identitas masuk Anda.",
-                                cont, conf, _resp)
+                                cont, conf, dn, _resp)
                     },
                     another_error => {
                         // api_result_error_json!(errno::INTERNAL_SERVER_ERROR,
@@ -263,7 +264,7 @@ pub fn setup(ctx:&Context, server: &mut Nickel){
                         error!("Cannot binding to LDAP service. {}.", another_error);
 
                         show_error!("Internal server error. Gagal terhubung dengan server LDAP.",
-                                cont, conf, _resp)
+                                cont, conf, dn, _resp)
 
                         // format!("Error: {}", another_error)
                     }
