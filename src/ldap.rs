@@ -4,6 +4,10 @@ use oldap::*;
 
 
 pub fn connect(uri:&str, admin:&str, password:&str, dn:&str) -> RustLDAP {
+
+    debug!("conneting to ldap using: uri: {}, admin: {}, password: {}, dn: {}",
+        uri, admin, password, dn);
+
     let conn = RustLDAP::new(uri).unwrap();
     conn.set_option(codes::options::LDAP_OPT_PROTOCOL_VERSION, &codes::versions::LDAP_VERSION3);
 

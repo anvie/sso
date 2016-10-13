@@ -87,7 +87,9 @@ fn main() {
         let mut data = HashMap::new();
         let query = _req.query();
         let cont:String = utils::encode_url(query.get("continue").unwrap_or("/"));
-        debug!("cont: {}", cont);
+        let dn:String = utils::encode_url(query.get("target_dn").unwrap_or("dc=ansvia,dc=org"));
+        debug!("cont: {}, dn: {}", cont, dn);
+        data.insert("dn", dn);
         data.insert("continue", cont);
         data.insert("login_caption", conf.login_caption.clone());
         data.insert("version", build::VERSION.to_string());
