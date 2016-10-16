@@ -246,7 +246,7 @@ pub fn setup(ctx:&Context, server: &mut Nickel){
 
                     // return _resp.send(show_error(ctx, "Identitas atau kata kunci salah", cont, &_resp));
 
-                    show_error!("Identitas atau kata kunci tidak benar, mohon pastikan identitas atau kata kunci yang Anda masukkan benar.",
+                    show_error!("Unauthorized continue target parameter. Please contact administrator.",
                             cont, conf, dn, _resp)
                 }else{
                     api_result_success_json!(generated_token, _resp)
