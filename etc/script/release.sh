@@ -18,21 +18,25 @@ echo $next_version > $CURDIR/../../VERSION
 
 echo "Version updated."
 
-echo -n "Generate build.rs ? [y/n] "
+echo -n "Apply version ? [y/n] "
 
-read generate_build_rs
+read apply_version
 
-if [ "$generate_build_rs" == "y" ]; then
-    make src/build.rs
-    echo "build.rs updated."
+if [ "$apply_version" == "y" ]; then
+    make version
+    echo "version applied."
 fi
 
-echo -n "commit and tag ? [y/n] "
+echo -n "bump version ? [y/n] "
 read to_commit
 
 if [ "$to_commit" == "y" ]; then
     git commit -am "bump version $next_version"
-    git tag "v$next_version"
+    echo -n "tag version ? [y/n] "
+    read tag_version
+    if [ "$tag_version" == "y" ]; then
+        git tag "v$next_version"
+    fi
 fi
 
 echo "done."
