@@ -152,6 +152,12 @@ pub fn setup(ctx:&Context, server: &mut Nickel){
             &conf.ldap.admin_password, &dn);
 
 
+        if conn.is_err() {
+            show_error!(conn.err().unwrap(), cont, conf, dn, _resp);
+        }
+
+        let conn = conn.unwrap();
+
         let dn_query = &format!("uid={},ou=People,{}", user_name, dn);
 
         debug!("dn_query: {}", dn_query);

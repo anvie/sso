@@ -26,6 +26,7 @@ init-dev:
 	fi;
 
 version: src/build.rs
+	@@sed -i.bak 's/version = ".*"/version = "$(VERSION)"/' Cargo.toml
 
 
 clean:
